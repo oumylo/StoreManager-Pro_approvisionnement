@@ -1,0 +1,79 @@
+@startuml use_case_vente
+left to right direction
+
+actor "Chargé de Vente" as user
+
+rectangle "StoreManager Pro" {
+
+    
+    usecase "Consulter Vente / POS" as VP
+    usecase "Gestion Dette" as GD
+
+
+    ' =====================================================
+    ' VENTE / POS
+    ' =====================================================
+    usecase "Afficher statistiques ventes" as STAT
+    usecase "Afficher statistiques dettes" as STATD
+    usecase "Consulter registre des ventes" as CRV
+    usecase "Créer une nouvelle vente" as CNV
+
+    usecase "Sélectionner client acheteur" as SCA
+    usecase "Ajouter article au panier" as AAP
+    usecase "Modifier quantité du panier" as MQP
+    usecase "Supprimer article du panier" as SAP
+    usecase "Valider la vente" as VDV
+
+    usecase "Voir lignes de commande" as VLC
+
+
+    ' =====================================================
+    ' GESTION DETTES
+    ' =====================================================
+
+    usecase "Consulter registre des dettes actives" as CRDA
+    usecase "Rechercher un client" as RCH
+    usecase "Voir articles d'une dette" as VAD
+    usecase "Voir paiements d'une dette" as VPD
+    usecase "Enregistrer un paiement" as EP
+
+
+  
+}
+
+' CHARGÉ DE VENTE
+
+user --> VP
+user --> GD
+
+
+' VENTE / POS
+
+VP ..> CRV : <<include>>
+VP ..> CNV : <<include>>
+VP ..> STAT : <<include>>
+VP ..> STATD : <<include>>
+
+CNV ..> SCA : <<include>>
+CNV ..> AAP : <<include>>
+CNV ..> VDV : <<include>>
+
+AAP ..> MQP : <<extend>>
+AAP ..> SAP : <<extend>>
+
+CRV ..> VLC : <<extend>>
+
+
+' DETTES
+
+
+GD ..> CRDA : <<include>>
+GD ..> RCH : <<include>>
+
+CRDA ..> VAD : <<extend>>
+CRDA ..> VPD : <<extend>>
+CRDA ..> EP : <<extend>>
+
+
+
+@enduml
