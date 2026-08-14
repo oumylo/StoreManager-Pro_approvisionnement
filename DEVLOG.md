@@ -1,4 +1,4 @@
-# 📓 Journal de Développement (DEVLOG)
+# Journal de Développement (DEVLOG)
 
 **Nom & Prénom** : Oumy LO  
 **Projet** : StoreManager Pro (ERP PHP/POO)
@@ -7,7 +7,7 @@
 
 ## 1. Suivi Chronologique des Phases
 
-### 🌃 [Vendredi - Phase 1] : Conception & BDD Fallback
+### [Vendredi - Phase 1] : Conception & BDD Fallback
 
 #### Étape 1.1 — Conception UML
 
