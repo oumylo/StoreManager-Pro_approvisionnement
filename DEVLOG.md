@@ -122,7 +122,7 @@ utilisateurs.
 
 * Implémentation du **fallback automatique vers SQLite** lorsque PostgreSQL n'est pas disponible :
 
-  ```text
+  text
   PostgreSQL
        ↓
   Échec de connexion
@@ -130,7 +130,7 @@ utilisateurs.
   SQLite
        ↓
   Database/erp.db
-  ```
+
 
 * Utilisation du fichier `Database/erp.db` comme base de secours.
 
@@ -138,28 +138,27 @@ utilisateurs.
 
 * Conservation de la fonction `connexionDB()` afin de maintenir une utilisation simple de la connexion dans le reste de l'application :
 
-  ```php
+   php
   function connexionDB(): PDO
   {
       return Database::getInstance()->getConnection();
   }
-  ```
+  
 
 ### Tests réalisés :
 
 * Test de connexion avec PostgreSQL :
 
-  ```text
+  text
   Connexion réussie !
   Base utilisée : pgsql
-  ```
+  
 
-* Test du fallback en provoquant volontairement une erreur de connexion PostgreSQL :
-
-  ```text
+* Test du fallback en provoquant volontairement une erreur de connexion PostgreSQL
+  text
   Connexion réussie !
   Base utilisée : sqlite
-  ```
+ 
 
 * Vérification que les deux bases possèdent les 13 tables nécessaires au fonctionnement de l'application.
 
