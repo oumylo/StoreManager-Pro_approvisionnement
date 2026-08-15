@@ -1,26 +1,3 @@
--- ============================================================
--- StoreManager Pro — Schéma SQLite (fallback local, fichier erp.db)
--- ============================================================
-
-PRAGMA foreign_keys = ON;
-
-DROP TABLE IF EXISTS lignes_appro;
-DROP TABLE IF EXISTS appros;
-DROP TABLE IF EXISTS statuts_appro;
-DROP TABLE IF EXISTS reglements;
-DROP TABLE IF EXISTS modes_paiement;
-DROP TABLE IF EXISTS dettes;
-DROP TABLE IF EXISTS lignes_commande;
-DROP TABLE IF EXISTS commandes;
-DROP TABLE IF EXISTS produits;
-DROP TABLE IF EXISTS clients;
-DROP TABLE IF EXISTS fournisseurs;
-DROP TABLE IF EXISTS utilisateurs;
-DROP TABLE IF EXISTS roles;
-
--- ============================================================
--- RÔLES & UTILISATEURS
--- ============================================================
 
 CREATE TABLE roles (
     id   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,9 +14,6 @@ CREATE TABLE utilisateurs (
     role_id      INTEGER NOT NULL REFERENCES roles(id) ON DELETE RESTRICT
 );
 
--- ============================================================
--- TIERS : CLIENTS & FOURNISSEURS
--- ============================================================
 
 CREATE TABLE clients (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -58,9 +32,6 @@ CREATE TABLE fournisseurs (
     adresse  TEXT
 );
 
--- ============================================================
--- CATALOGUE PRODUITS
--- ============================================================
 
 CREATE TABLE produits (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,9 +40,6 @@ CREATE TABLE produits (
     quantite_stock  INTEGER NOT NULL DEFAULT 0 CHECK (quantite_stock >= 0)
 );
 
--- ============================================================
--- RÉFÉRENTIELS (modes de paiement, statuts appro)
--- ============================================================
 
 CREATE TABLE modes_paiement (
     id    INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -83,9 +51,6 @@ CREATE TABLE statuts_appro (
     nom  TEXT NOT NULL UNIQUE
 );
 
--- ============================================================
--- VENTES (Commandes + Lignes)
--- ============================================================
 
 CREATE TABLE commandes (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,9 +69,7 @@ CREATE TABLE lignes_commande (
     prix_reel     NUMERIC NOT NULL CHECK (prix_reel >= 0)
 );
 
--- ============================================================
--- DETTES & RÈGLEMENTS
--- ============================================================
+
 
 CREATE TABLE dettes (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -127,9 +90,6 @@ CREATE TABLE reglements (
     montant           NUMERIC NOT NULL CHECK (montant > 0)
 );
 
--- ============================================================
--- APPROVISIONNEMENTS (BL + Lignes)
--- ============================================================
 
 CREATE TABLE appros (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -148,10 +108,6 @@ CREATE TABLE lignes_appro (
     qte_recu    INTEGER NOT NULL DEFAULT 0 CHECK (qte_recu >= 0),
     prix_reel   NUMERIC NOT NULL CHECK (prix_reel >= 0)
 );
-
--- ============================================================
--- DONNÉES DE RÉFÉRENCE MINIMALES
--- ============================================================
 
 INSERT INTO roles (nom) VALUES ('admin'), ('vente'), ('stock'), ('inventaire');
 INSERT INTO modes_paiement (mode) VALUES ('Especes'), ('Wave'), ('Orange Money'), ('Virement');
