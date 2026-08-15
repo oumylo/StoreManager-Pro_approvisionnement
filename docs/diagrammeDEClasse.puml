@@ -63,9 +63,7 @@ class Dette {
     - statut : String
     - dateCreation : Date
 
-    + calculerResteDu() : float
-    + enregistrerPaiement(montant : float) : void
-    + estSoldee() : bool
+   
 }
 
 
@@ -86,10 +84,6 @@ class Fournisseur {
     - adresse : String
 }
 
-
-' =========================================================
-' APPROVISIONNEMENT
-' =========================================================
 
 class StatutAppro {
     - id : int
