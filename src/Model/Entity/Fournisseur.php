@@ -2,19 +2,30 @@
 
 class Fournisseur
 {
-    private ?int $id;
-    private string $nom;
-    private string $email;
-    private string $tel;
-    private string $adresse;
+    private ?int $id = null;
+    private string $nom = '';
+    private ?string $email = null;
+    private ?string $tel = null;
+    private ?string $adresse = null;
 
-    public function __construct( ?int $id, string $nom, string $email, string $tel, string $adresse) 
+    public function __construct( ?int $id = null, ?string $nom = null, ?string $email = null, ?string $tel = null, ?string $adresse = null) 
     {
         $this->id = $id;
-        $this->setNom($nom);
-        $this->setEmail($email);
-        $this->setTel($tel);
-        $this->setAdresse($adresse);
+        if ($nom !== null) {
+            $this->setNom($nom);
+        }
+
+        if ($email !== null) {
+            $this->setEmail($email);
+        }
+
+        if ($tel !== null) {
+            $this->setTel($tel);
+        }
+
+        if ($adresse !== null) {
+            $this->setAdresse($adresse);
+        }
     }
 
     // GETTERS

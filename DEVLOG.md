@@ -298,4 +298,78 @@ Les principales entités métier de StoreManager Pro sont maintenant implément�
 Les entités sont indépendantes de la base de données et pourront être utilisées par les Repository pour effectuer des opérations .
 
 
-##
+## ## 2.2 — Repositories & SQL sécurisé
+
+### Ce qui a été fait :
+
+- Création du dossier `src/Model/Repository/`.
+- Création de `ProduitRepository.php`.
+- Création de `ClientRepository.php`.
+- Création de `FournisseurRepository.php`.
+
+Les repositories permettent de séparer la logique d'accès aux données de la logique métier des entités.
+
+Chaque repository reçoit une connexion PDO dans son constructeur :
+
+
+public function __construct(PDO $pdo)
+{
+    $this->pdo = $pdo;
+}
+
+
+## ## [Samedi - Phase 2] : Couche Repository & SQL sécurisé
+
+### Étape 2.2 — Repositories & SQL Sécurisé
+
+### Ce qui a été fait :
+
+* Création du dossier `src/Model/Repository/`.
+
+* Mise en place des trois repositories demandés pour cette étape :
+
+  * `ProduitRepository.php`
+  * `ClientRepository.php`
+  * `FournisseurRepository.php`
+
+* Mise en place de la dépendance PDO dans chaque repository :
+
+private PDO $pdo;
+
+public function __construct(PDO $pdo)
+{
+    $this->pdo = $pdo;
+}
+
+
+* Implémentation des opérations  pour les produits :
+
+  * récupération de tous les produits ;
+  * ajout d'un produit ;
+  
+* Implémentation des opérations  pour les clients :
+
+ 
+  * récupération de tous les clients ;
+  * ajout d'un client ;
+  
+* Implémentation des opérations  pour les fournisseurs :
+
+  * recherche d'un fournisseur par son ID ;
+  * récupération de tous les fournisseurs ;
+  * ajout d'un fournisseur ;
+ 
+
+### Utilisation de PDO::FETCH_CLASS :
+
+
+### Difficultés / Obstacles :
+
+* Compréhension de `PDO::FETCH_CLASS` et de son fonctionnement avec les constructeurs des entités.
+* Problème de comptabilité des propriétés, notamment pour les identifiants, 
+
+* Nécessité de garder une correspondance entre les noms des colonnes SQL et les propriétés utilisées 
+
+### Résultat :
+La couche Repository demandée pour l'étape 2.2 est opérationnelle.
+

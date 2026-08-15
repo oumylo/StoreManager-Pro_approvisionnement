@@ -2,20 +2,34 @@
 
 class Produit
 {
-    private ?int $id;
-    private string $libelle;
-    private float $prixVente;
-    private int $stockInitial;
+    private ?int $id = null;
+    private string $libelle = '';
+    private float $prix_vente = 0;
+    private int $stock_initial = 0;
 
-    public function __construct( ?int $id, string $libelle, float $prixVente, int $stockInitial = 0) {
-
+    public function __construct(
+        ?int $id = null,
+        ?string $libelle = null,
+        ?float $prix_vente = null,
+        ?int $stock_initial = null
+    ) {
         $this->id = $id;
-        $this->setLibelle($libelle);
-        $this->setPrixVente($prixVente);
-        $this->setStockInitial($stockInitial);
+
+        if ($libelle !== null) {
+            $this->setLibelle($libelle);
+        }
+
+        if ($prix_vente !== null) {
+            $this->setPrixVente($prix_vente);
+        }
+
+        if ($stock_initial !== null) {
+            $this->setStockInitial($stock_initial);
+        }
     }
 
-    /// GETTERS 
+    // GETTERS
+
     public function getId(): ?int
     {
         return $this->id;
@@ -28,15 +42,15 @@ class Produit
 
     public function getPrixVente(): float
     {
-        return $this->prixVente;
+        return $this->prix_vente;
     }
 
     public function getStockInitial(): int
     {
-        return $this->stockInitial;
+        return $this->stock_initial;
     }
 
-     //SETTERS
+    // SETTERS
 
     public function setLibelle(string $libelle): void
     {
@@ -49,30 +63,29 @@ class Produit
         $this->libelle = trim($libelle);
     }
 
-    public function setPrixVente(float $prixVente): void
+    public function setPrixVente(float $prix_vente): void
     {
-        if ($prixVente < 0) {
+        if ($prix_vente < 0) {
             throw new InvalidArgumentException(
                 "Le prix de vente ne peut pas être négatif."
             );
         }
 
-        $this->prixVente = $prixVente;
+        $this->prix_vente = $prix_vente;
     }
 
-    public function setStockInitial(int $stockInitial): void
+    public function setStockInitial(int $stock_initial): void
     {
-        if ($stockInitial < 0) {
+        if ($stock_initial < 0) {
             throw new InvalidArgumentException(
                 "Le stock ne peut pas être négatif."
             );
         }
 
-        $this->stockInitial = $stockInitial;
+        $this->stock_initial = $stock_initial;
     }
 
-
-    // Méthodes métier
+    // MÉTHODES MÉTIER
 
     public function augmenterStock(int $quantite): void
     {
@@ -82,7 +95,7 @@ class Produit
             );
         }
 
-        $this->stockInitial += $quantite;
+        $this->stock_initial += $quantite;
     }
 
     public function diminuerStock(int $quantite): void
@@ -93,12 +106,12 @@ class Produit
             );
         }
 
-        if ($quantite > $this->stockInitial) {
+        if ($quantite > $this->stock_initial) {
             throw new InvalidArgumentException(
                 "Stock insuffisant."
             );
         }
 
-        $this->stockInitial -= $quantite;
+        $this->stock_initial -= $quantite;
     }
 }
