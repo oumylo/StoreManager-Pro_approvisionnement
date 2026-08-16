@@ -1,4 +1,3 @@
-
 <?php
 
 require_once dirname(__DIR__) . '/Core/Database.php';
@@ -25,17 +24,23 @@ class VenteService
         $this->pdo = connexionDB();
 
         
-        $this->produitRepo = new ProduitRepository();
-        $this->clientRepo = new ClientRepository();
-        $this->commandeRepo = new CommandeRepository();
-        $this->detteRepo = new DetteRepository();
+        $this->produitRepo = new ProduitRepository($this->pdo);
+        $this->clientRepo = new ClientRepository($this->pdo);
+        $this->commandeRepo = new CommandeRepository($this->pdo);
+        $this->detteRepo = new DetteRepository($this->pdo);
     }
 
 
-    public function validerVente( int $clientId, int $utilisateurId, array $panier, float $montantVerse): int {
+    public function validerVente(int $clientId, int $utilisateurId, array $panier, float $montantVerse): int {
+
+        
 
         if (empty($panier)) {
-            throw new InvalidArgumentException("Le panier est vide.");
+            throw new Exception("Le panier est vide.");
+        }
+
+        if ($montantVerse < 0) {
+            throw new Exception("Le montant versé ne peut pas être négatif.");
         }
 
 
@@ -51,49 +56,65 @@ class VenteService
 
             foreach ($panier as $article) {
 
-                $produitId = $article['produit_id'];
-                $quantite = $article['qte'];
+                $produitId = (int) $article['produit_id'];
+                $quantite = (int) $article['qte'];
+
+
+                if ($quantite <= 0) {
+                    throw new Exception(
+                        "La quantité doit être supérieure à zéro."
+                    );
+                }
 
 
                 $produit = $this->produitRepo->findById($produitId);
 
 
                 if ($produit === null) {
-                    throw new RuntimeException(
+                    throw new Exception(
                         "Produit introuvable."
                     );
                 }
 
                 if ($quantite > $produit->getQuantiteStock()) {
-
-                    throw new RuntimeException(
+                    throw new Exception(
                         "Stock insuffisant pour "
                         . $produit->getLibelle()
                     );
                 }
 
-                $sousTotal = $produit->getPrixVente() * $quantite;
 
+                $prix = $produit->getPrixVente();
 
-                $montantTotal = $montantTotal + $sousTotal;
+                $sousTotal = $prix * $quantite;
+
+                $montantTotal += $sousTotal;
+
 
                 $lignesAValider[] = [
                     'produit' => $produit,
                     'qte' => $quantite,
-                    'prix' => $produit->getPrixVente()
+                    'prix' => $prix
                 ];
+            }
+
+
+            if ($montantVerse > $montantTotal) {
+                throw new Exception(
+                    "Le montant versé ne peut pas dépasser le montant total."
+                );
             }
 
 
             $montantACredit = $montantTotal - $montantVerse;
 
+
             if ($montantACredit > 0) {
 
                 $client = $this->clientRepo->findById($clientId);
 
-
                 if ($client === null) {
-                    throw new RuntimeException(
+                    throw new Exception(
                         "Client introuvable."
                     );
                 }
@@ -101,19 +122,17 @@ class VenteService
                 $creditDejaUtilise =
                     $this->clientRepo->getCreditUtilise($clientId);
 
-                $creditAutorise = $client->peutPrendreCredit(
+
+                if (!$client->peutPrendreCredit(
                     $montantACredit,
                     $creditDejaUtilise
-                );
+                )) {
 
-
-                if (!$creditAutorise) {
-                    throw new RuntimeException(
+                    throw new Exception(
                         "Limite de crédit dépassée pour ce client."
                     );
                 }
             }
-
 
             $commandeId = $this->commandeRepo->create(
                 $clientId,
@@ -122,11 +141,13 @@ class VenteService
                 $montantVerse
             );
 
+
             foreach ($lignesAValider as $ligne) {
 
                 $produit = $ligne['produit'];
                 $quantite = $ligne['qte'];
                 $prix = $ligne['prix'];
+
 
                 $this->commandeRepo->addLigne(
                     $commandeId,
@@ -135,14 +156,17 @@ class VenteService
                     $prix
                 );
 
+
                 $nouveauStock =
                     $produit->getQuantiteStock() - $quantite;
+
 
                 $this->produitRepo->updateStock(
                     $produit->getId(),
                     $nouveauStock
                 );
             }
+
 
 
             if ($montantACredit > 0) {
@@ -162,13 +186,14 @@ class VenteService
             return $commandeId;
 
 
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
 
-            $this->pdo->rollBack();
-
+          
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
 
             throw $e;
         }
     }
 }
-
