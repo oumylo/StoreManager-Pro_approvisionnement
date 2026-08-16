@@ -10,11 +10,10 @@ class DetteRepository
     private PDO $pdo;
 
 
-    public function __construct()
+    public function __construct(PDO $pdo)
     {
-        $this->pdo = connexionDB();
+        $this->pdo = $pdo;
     }
-
 
    
     public function create( int $commandeId, int $clientId, float $montantInitial, float $montantPaye): int {
