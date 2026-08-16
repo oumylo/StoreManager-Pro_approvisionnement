@@ -1,5 +1,5 @@
-<?php
 
+<?php
 
 require_once dirname(__DIR__) . '/Entity/Produit.php';
 require_once dirname(dirname(__DIR__)) . '/Core/Database.php';
@@ -13,40 +13,66 @@ class ProduitRepository
         $this->pdo = connexionDB();
     }
 
+
+    
     public function findAll(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM produits ORDER BY libelle");
+        $sql = "SELECT * FROM produits ORDER BY libelle";
+
+        $stmt = $this->pdo->query($sql);
+
         $stmt->setFetchMode(PDO::FETCH_CLASS, Produit::class);
 
-        return $stmt->fetchAll();
+        $produits = $stmt->fetchAll();
+
+        return $produits;
     }
 
+
+   
     public function findById(int $id): ?Produit
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM produits WHERE id = ?");
+        $sql = "SELECT * FROM produits WHERE id = ?";
+
+        $stmt = $this->pdo->prepare($sql);
+
         $stmt->execute([$id]);
+
         $stmt->setFetchMode(PDO::FETCH_CLASS, Produit::class);
 
         $produit = $stmt->fetch();
 
-        return $produit !== false ? $produit : null;
+        if ($produit === false) {
+            return null;
+        }
+
+        return $produit;
     }
 
+
+    
     public function create(Produit $produit): int
     {
-        $sql = "INSERT INTO produits (libelle, prix_vente, quantite_stock)
-                VALUES (:libelle, :prix_vente, :quantite_stock)";
+        $sql = "INSERT INTO produits
+                (libelle, prix_vente, quantite_stock)
+                VALUES
+                (:libelle, :prix_vente, :quantite_stock)";
 
         $stmt = $this->pdo->prepare($sql);
+
         $stmt->execute([
-            'libelle'        => $produit->getLibelle(),
-            'prix_vente'     => $produit->getPrixVente(),
-            'quantite_stock' => $produit->getQuantiteStock(),
+            'libelle' => $produit->getLibelle(),
+            'prix_vente' => $produit->getPrixVente(),
+            'quantite_stock' => $produit->getQuantiteStock()
         ]);
 
-        return (int) $this->pdo->lastInsertId();
+        $id = $this->pdo->lastInsertId();
+
+        return (int) $id;
     }
 
+
+    
     public function update(Produit $produit): bool
     {
         $sql = "UPDATE produits
@@ -57,30 +83,44 @@ class ProduitRepository
 
         $stmt = $this->pdo->prepare($sql);
 
-        return $stmt->execute([
-            'libelle'        => $produit->getLibelle(),
-            'prix_vente'     => $produit->getPrixVente(),
+        $resultat = $stmt->execute([
+            'libelle' => $produit->getLibelle(),
+            'prix_vente' => $produit->getPrixVente(),
             'quantite_stock' => $produit->getQuantiteStock(),
-            'id'             => $produit->getId(),
+            'id' => $produit->getId()
         ]);
+
+        return $resultat;
     }
 
+
+    
     public function updateStock(int $produitId, int $nouvelleQuantite): bool
     {
-        $sql = "UPDATE produits SET quantite_stock = :quantite WHERE id = :id";
+        $sql = "UPDATE produits
+                SET quantite_stock = :quantite
+                WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
 
-        return $stmt->execute([
+        $resultat = $stmt->execute([
             'quantite' => $nouvelleQuantite,
-            'id'       => $produitId,
+            'id' => $produitId
         ]);
+
+        return $resultat;
     }
 
+
+    
     public function delete(int $id): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM produits WHERE id = ?");
+        $sql = "DELETE FROM produits WHERE id = ?";
 
-        return $stmt->execute([$id]);
+        $stmt = $this->pdo->prepare($sql);
+
+        $resultat = $stmt->execute([$id]);
+
+        return $resultat;
     }
 }

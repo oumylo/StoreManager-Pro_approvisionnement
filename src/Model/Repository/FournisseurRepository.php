@@ -1,8 +1,8 @@
+```php
 <?php
 
-
 require_once dirname(__DIR__) . '/Entity/Fournisseur.php';
-require_once dirname(__DIR__) . '/src/Core/Database.php';
+require_once dirname(dirname(__DIR__)) . '/Core/Database.php';
 
 class FournisseurRepository
 {
@@ -13,45 +13,67 @@ class FournisseurRepository
         $this->pdo = connexionDB();
     }
 
-    // Récupérer tous les fournisseurs
+
+   
     public function findAll(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM fournisseurs ORDER BY nom");
+        $sql = "SELECT * FROM fournisseurs ORDER BY nom";
+
+        $stmt = $this->pdo->query($sql);
+
         $stmt->setFetchMode(PDO::FETCH_CLASS, Fournisseur::class);
 
-        return $stmt->fetchAll();
+        $fournisseurs = $stmt->fetchAll();
+
+        return $fournisseurs;
     }
 
-    // Récupérer un fournisseur par son id
+
+   
     public function findById(int $id): ?Fournisseur
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM fournisseurs WHERE id = ?");
+        $sql = "SELECT * FROM fournisseurs WHERE id = ?";
+
+        $stmt = $this->pdo->prepare($sql);
+
         $stmt->execute([$id]);
+
         $stmt->setFetchMode(PDO::FETCH_CLASS, Fournisseur::class);
 
         $fournisseur = $stmt->fetch();
 
-        return $fournisseur !== false ? $fournisseur : null;
+        if ($fournisseur === false) {
+            return null;
+        }
+
+        return $fournisseur;
     }
 
-    // Insérer un nouveau fournisseur et retourner son id
+
+   
     public function create(Fournisseur $fournisseur): int
     {
-        $sql = "INSERT INTO fournisseurs (nom, email, tel, adresse)
-                VALUES (:nom, :email, :tel, :adresse)";
+        $sql = "INSERT INTO fournisseurs
+                (nom, email, tel, adresse)
+                VALUES
+                (:nom, :email, :tel, :adresse)";
 
         $stmt = $this->pdo->prepare($sql);
+
         $stmt->execute([
-            'nom'     => $fournisseur->getNom(),
-            'email'   => $fournisseur->getEmail(),
-            'tel'     => $fournisseur->getTel(),
-            'adresse' => $fournisseur->getAdresse(),
+            'nom' => $fournisseur->getNom(),
+            'email' => $fournisseur->getEmail(),
+            'tel' => $fournisseur->getTel(),
+            'adresse' => $fournisseur->getAdresse()
         ]);
 
-        return (int) $this->pdo->lastInsertId();
+        $id = $this->pdo->lastInsertId();
+
+        return (int) $id;
     }
 
-    // Mettre à jour un fournisseur existant
+
+    
     public function update(Fournisseur $fournisseur): bool
     {
         $sql = "UPDATE fournisseurs
@@ -63,20 +85,27 @@ class FournisseurRepository
 
         $stmt = $this->pdo->prepare($sql);
 
-        return $stmt->execute([
-            'nom'     => $fournisseur->getNom(),
-            'email'   => $fournisseur->getEmail(),
-            'tel'     => $fournisseur->getTel(),
+        $resultat = $stmt->execute([
+            'nom' => $fournisseur->getNom(),
+            'email' => $fournisseur->getEmail(),
+            'tel' => $fournisseur->getTel(),
             'adresse' => $fournisseur->getAdresse(),
-            'id'      => $fournisseur->getId(),
+            'id' => $fournisseur->getId()
         ]);
+
+        return $resultat;
     }
 
-    // Supprimer un fournisseur
+
+   
     public function delete(int $id): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM fournisseurs WHERE id = ?");
+        $sql = "DELETE FROM fournisseurs WHERE id = ?";
 
-        return $stmt->execute([$id]);
+        $stmt = $this->pdo->prepare($sql);
+
+        $resultat = $stmt->execute([$id]);
+
+        return $resultat;
     }
 }
