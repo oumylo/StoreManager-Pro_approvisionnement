@@ -11,7 +11,7 @@
 - **Ce qui a été fait** :
   - Conception UML (Use Case + Classes).
   - Écriture des scripts SQL `schema.sql` (PostgreSQL) et `schema_sqlite.sql` (SQLite).
-  - Création de la classe `Database` en Singleton avec fallback automatique vers SQLite.
+ 
 - **Difficultés / Obstacles** :
   - Distinguer les droits des quatre profils (Admin, Vente, Stock, Inventaire) sur le diagramme de cas d'utilisation.
   
