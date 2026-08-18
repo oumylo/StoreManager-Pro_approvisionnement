@@ -32,7 +32,7 @@ class Database
         }
     }
 
-    
+
     public static function getInstance(): Database
     {
         if (self::$instance === null) {
@@ -42,26 +42,35 @@ class Database
         return self::$instance;
     }
 
-   
+
     public static function getConnection(): PDO
     {
         return self::getInstance()->connection;
     }
 
-   
+
     public static function query(
         string $sql,
-        bool $single = true
-    ): array {
+        bool $single = true,
+        ?string $class = null
+    ): array|object|null {
 
-        $query = self::getConnection()->query($sql);
+        $stmt = self::getConnection()->query($sql);
 
-        return $single
-            ? $query->fetch()
-            : $query->fetchAll();
+        if ($class !== null) {
+            $stmt->setFetchMode(PDO::FETCH_CLASS, $class);
+        }
+
+        if ($single) {
+            $result = $stmt->fetch();
+            return $result === false ? null : $result;
+        }
+
+        return $stmt->fetchAll();
     }
 
-    
+
+  
     public static function prepare(
         string $sql,
         array $datas = []
@@ -77,17 +86,25 @@ class Database
     public static function executeQuery(
         string $sql,
         array $datas = [],
-        bool $single = true
-    ): array {
+        bool $single = true,
+        ?string $class = null
+    ): array|object|null {
 
         $statement = self::prepare($sql, $datas);
 
-        return $single
-            ? $statement->fetch()
-            : $statement->fetchAll();
+        if ($class !== null) {
+            $statement->setFetchMode(PDO::FETCH_CLASS, $class);
+        }
+
+        if ($single) {
+            $result = $statement->fetch();
+            return $result === false ? null : $result;
+        }
+
+        return $statement->fetchAll();
     }
 
-    
+
     public static function executeUpdate(
         string $sql,
         array $datas = []
